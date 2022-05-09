@@ -9,12 +9,20 @@ const getAll = async () => {
 
 const getById = async (id) => {
   const query = 'SELECT * FROM StoreManager.products WHERE id = ?';
-  const [products] = await connection.execute(query, [id]);
+  const [product] = await connection.execute(query, [id]);
 
-  return products;
+  return product;
+};
+
+const getByName = async (name) => {
+  const query = 'SELECT * FROM StoreManager.products WHERE name = ?';
+  const [product] = await connection.execute(query, [name]);
+
+  return product;
 };
 
 module.exports = {
   getAll,
   getById,
+  getByName,
 };
