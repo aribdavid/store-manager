@@ -8,7 +8,7 @@ const getAll = async (_request, response, _next) => {
 
 const getById = async (request, response, _next) => {
     const { id } = request.params;
-     await productService.findById(id)
+     await productService.getById(id)
      .then((res) => response.status(200).json(res))
      .catch((error) => response.status(error.status).json({ message: error.message }));
 };
