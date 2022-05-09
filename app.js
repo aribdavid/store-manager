@@ -13,6 +13,14 @@ app.get('/', (_request, response) => {
 app.use('/products', routers.product);
 app.use('/sales', routers.sale);
 
+app.use((error, _req, response, _next) => {
+  if (!error.status) {
+    console.log('Error: ', error.message);
+    return response.status(500).json({ message: 'Internal server erroror' });
+  }
+  return response.status(error.status).json({ message: error.message });
+});
+
 // não remova essa exportação, é para o avaliador funcionar
 // você pode registrar suas rotas normalmente, como o exemplo acima
 // você deve usar o arquivo index.js para executar sua aplicação 
