@@ -4,9 +4,9 @@ const saleController = require('../controllers/saleController');
 
 const router = express.Router();
 
-router.get('/');
+router.get('/', saleController.getAll);
 
-router.get('/:id');
+router.get('/:id', saleController.getById);
 
 router.post('/', middleware.saleValidator, saleController.createSale);
 
