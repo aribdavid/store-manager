@@ -86,20 +86,20 @@ describe('Busca um produto especifico por id = Camada de controller', () => {
       res.status = sinon.stub().returns(res);
       res.json = sinon.stub().returns();
 
-      sinon.stub(productService, "findById").resolves(product);
+      sinon.stub(productService, "getById").resolves(product);
     })
 
     after(() => {
-      productService.findById.restore();
+      productService.getById.restore();
     })
 
     it('Retorna com o status 200', async () => {
-      await productController.findById(req, res);
+      await productController.getById(req, res);
 
       expect(res.status.calledWith(200)).to.be.equal(true)
     });
     it("O json contêm o formato correto", async () => {
-      await productController.findById(req, res);
+      await productController.getById(req, res);
 
       expect(res.json.calledWith(product)).to.be.equal(true)
     })
@@ -113,22 +113,22 @@ describe('Busca um produto especifico por id = Camada de controller', () => {
       res.status = sinon.stub().returns(res);
       res.json = sinon.stub().returns();
 
-      sinon.stub(productService, "findById").throws(error);
+      sinon.stub(productService, "getById").throws(error);
     })
 
     after(() => {
-      productService.findById.restore();
+      productService.getById.restore();
     })
     it('Retorna um erro com o status 404', async () => {
       try {
-        await productController.findById(req, res);
+        await productController.getById(req, res);
       } catch (err) {
         expect(err.status).to.be.equal(404)
       }
     });
     it('Retorna um erro com a mensagem "Product not found"', async () => {
       try {
-        await productController.findById(req, res);
+        await productController.getById(req, res);
       } catch (err) {
         expect(err.message).to.be.equal('Product not found')
       }

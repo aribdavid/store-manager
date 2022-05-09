@@ -1,5 +1,5 @@
 const productModel = require('../models/productModel');
-const errorHandler = require('../utils/errorHandler');
+const errorHandler = require('../../../utils/errorHandler');
 
 const getAll = async () => {
   const products = await productModel.getAll();
@@ -16,7 +16,7 @@ const getById = async (id) => {
 };
 
 const createProduct = async (name, quantity) => {
-  const productExists = await productModel.findByName(name);
+  const productExists = await productModel.getByName(name);
   if (productExists.length > 0) throw errorHandler(409, 'Product already exists');
   const product = await productModel.createProduct(name, quantity);
   return product;
