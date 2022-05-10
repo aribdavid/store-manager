@@ -1,195 +1,163 @@
-const sinon = require("sinon");
-const { expect } = require("chai");
-const productController = require('../../../controllers/productController')
-const productService = require("../../../services/productService")
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const sinon = require('sinon');
+const productController = require('../../../controllers/productController');
+const productService = require('../../../services/productService');
+const errorHandler = require('../../../utils/errorHandler')
 
-describe('Busca todos os produtos - Camada de controller', () => {
-  describe('Quando acha', () => {
-    const req = {};
-    const res = {};
-    const products = [{
-      id: 1,
-      name: 'Martelo de Thor',
-      quantity: 10
-    },{
-      id: 2,
-      name: 'Traje de encolhimento',
-      quantity: 20
-    }];
+chai.use(chaiAsPromised);
 
-    before(() => {
-      res.status = sinon.stub().returns(res)
-      res.json = sinon.stub().returns()
+const { expect } = chai;
 
-      sinon.stub(productService, 'getAll').resolves(products)
+describe('Busca pelos "products" na Camada Controllers ', () => {
+
+    describe('Quando buscar por todos os produtos', () => {
+        describe('Quando não existir nenhum produto cadastrado', () => {
+
+            const res = {};
+            const req = {};
+
+            before(() => {
+                res.status = sinon.stub().returns(res);
+                res.json = sinon.stub().returns();
+                sinon.stub(productService, 'getAll').resolves();
+            })
+
+            after(() => {
+                productService.getAll.restore();
+            })
+
+            it('Teste se lança um erro "status: 404, message: "Product not found"', () => {
+                const result = productController.getAll();
+                const message = errorHandler('404', "Product Not Found");
+                return expect(result).to.be.rejectedWith(message);
+            });
+        });
+
+        describe('Quando existir pelo menos um produto cadastrado', () => {
+            const res = {};
+            const req = {};
+
+            const productsMock = [
+                {
+                    id: 1,
+                    name: "Martelo de Thor",
+                    quantity: 10,
+                }
+            ];
+
+            before(() => {
+                res.status = sinon.stub().returns(res);
+                res.json = sinon.stub().returns();
+                sinon.stub(productService, 'getAll').resolves(productsMock);
+            })
+
+            after(() => {
+                productService.getAll.restore();
+            })
+
+            it('Teste se retorna o metodo "status" passando o codigo 200', async () => {
+                await productController.getAll(req, res);
+                expect(res.status.calledWith(200)).to.be.true
+            });
+
+            it('Teste se retorna um array', async () => {
+                await productController.getAll(req, res);
+                expect(res.json.calledWith(sinon.match.array)).to.be.true;
+            });
+
+            it('Teste se o array não está vazio', async () => {
+                await productController.getAll(req, res);
+                expect((res.json.calledWith(sinon.match.array)).length !== 0).to.be.true;
+            });
+
+            it('Teste se o conteúdo do array é um objeto', async () => {
+                await productController.getAll(req, res);
+                expect(res.json.calledWith([sinon.match.object])).to.be.true;
+            });
+
+            it('Teste se o objeto possui as chaves id, name e quantity', async () => {
+                await productController.getAll(req, res);
+                expect(res.json.calledWith(sinon.match.array.deepEquals(productsMock))).to.be.true;
+            });
+
+        })
+
     })
 
-    after(() => {
-      productService.getAll.restore()
+    describe('Quando buscar um produto pelo id', () => {
+        describe('Quando não existir produto cadastrado com o id informado', () => {
+
+            const res = {};
+            const req = {};
+
+            before(() => {
+                req.params = { id: 300 };
+                res.status = sinon.stub().returns(res);
+                res.json = sinon.stub().returns();
+                sinon.stub(productService, 'getById').resolves();
+            })
+
+            after(() => {
+                productService.getById.restore();
+            })
+
+            it('Teste se lança um erro "status: 404, message: "Product not found"', () => {
+                const result = productController.getById();
+                const message = errorHandler('404', "Product Not Found");
+                return expect(result).to.be.rejectedWith(message);
+            });
+        });
+
+        describe('Quando existir um produto cadastrado com o id informado ', () => {
+
+            const res = {};
+            const req = {};
+
+            const productsMock = [
+                {
+                    id: 1,
+                    name: "Martelo de Thor",
+                    quantity: 10,
+                }
+            ];
+
+            before(() => {
+                req.params = { id: 1 };
+                res.status = sinon.stub().returns(res);
+                res.json = sinon.stub().returns();
+                sinon.stub(productService, 'getById').resolves(productsMock);
+            })
+
+            after(() => {
+                productService.getById.restore();
+            })
+
+            it('Teste se retorna o metodo "status" passando o codigo 200', async () => {
+                await productController.getById(req, res);
+                expect(res.status.calledWith(200)).to.be.true
+            });
+
+            it('Teste se retorna um array', async () => {
+                await productController.getById(req, res);
+                expect(res.json.calledWith(sinon.match.array)).to.be.true;
+            });
+
+            it('Teste se o array não está vazio', async () => {
+                await productController.getById(req, res);
+                expect((res.json.calledWith(sinon.match.array)).length !== 0).to.be.true;
+            });
+
+            it('Teste se o conteúdo do array é um objeto', async () => {
+                await productController.getById(req, res);
+                expect(res.json.calledWith([sinon.match.object])).to.be.true;
+            });
+
+            it('Teste se o objeto possui as chaves e valores id: 1, name: "Martelo de Thor" e quantity: 10', async () => {
+                await productController.getById(req, res);
+                expect(res.json.calledWith(sinon.match.array.deepEquals(productsMock))).to.be.true;
+            });
+
+        })
     })
-
-    it('O status é 200', async () => {
-      await productController.getAll(req, res);
-
-      expect(res.status.calledWith(200)).to.be.equal(true)
-    });
-
-    it('O json contêm os dados certos', async () => {
-      await productController.getAll(req, res);
-
-      expect(res.json.calledWith(products)).to.be.equal(true)
-    });
-  });
-
-  describe('Quando não acha', () => {
-    const req = {};
-    const res = {};
-    const next = () => {};
-    const error = {status: 404, message: "Products not found"};
-
-    before(() => {
-      res.status = sinon.stub().returns(res)
-      res.json = sinon.stub().returns()
-
-      sinon.stub(productService, 'getAll').throws(error)
-    });
-
-    after(() => {
-      productService.getAll.restore()
-    });
-
-    it("O status é 404", async () => {
-      await productController.getAll(req, res, next);
-
-      expect(res.status.calledWith(404)).to.be.equal(true)
-    }) 
-
-    it('O json contêm a mensagem', async () => {
-      await productController.getAll(req, res);
-
-      expect(res.json.calledWith({message: "Products not found"})).to.be.equal(true)
-    });
-  });
-});
-
-describe('Busca um produto especifico por id = Camada de controller', () => {
-  describe('Quando acha', () => {
-    const req = {};
-    const res = {};
-    const product = {
-      id: 1,
-      name: "Bola de brilhar",
-      quantity: 1
-    }
-    before(() => {
-      req.params = {id: 1}
-      res.status = sinon.stub().returns(res);
-      res.json = sinon.stub().returns();
-
-      sinon.stub(productService, "getById").resolves(product);
-    })
-
-    after(() => {
-      productService.getById.restore();
-    })
-
-    it('Retorna com o status 200', async () => {
-      await productController.getById(req, res);
-
-      expect(res.status.calledWith(200)).to.be.equal(true)
-    });
-    it("O json contêm o formato correto", async () => {
-      await productController.getById(req, res);
-
-      expect(res.json.calledWith(product)).to.be.equal(true)
-    })
-  });
-  describe('Quando não acha', () => {
-    const req = {};
-    const res = {};
-    const error = { status: 404, message: 'Product not found'}
-    before(() => {
-      req.params = {id: 999}
-      res.status = sinon.stub().returns(res);
-      res.json = sinon.stub().returns();
-
-      sinon.stub(productService, "getById").throws(error);
-    })
-
-    after(() => {
-      productService.getById.restore();
-    })
-    it('Retorna um erro com o status 404', async () => {
-      try {
-        await productController.getById(req, res);
-      } catch (err) {
-        expect(err.status).to.be.equal(404)
-      }
-    });
-    it('Retorna um erro com a mensagem "Product not found"', async () => {
-      try {
-        await productController.getById(req, res);
-      } catch (err) {
-        expect(err.message).to.be.equal('Product not found')
-      }
-    });
-  });
-});
-
-describe('Cria um novo produto - Camada de service', () => {
-  describe('Quando cria', () => {
-    const response = {
-      id:1,
-      name:'teste',
-      quantity:100,
-    }
-    const req = {};
-    const res = {}
-    before(() => {
-      req.body = {...response}
-
-      res.status = sinon.stub().returns(res);
-      res.json = sinon.stub().returns()
-      sinon.stub(productService, "createProduct").resolves(response);
-    });
-
-    after(() => {
-      productService.createProduct.restore();
-    });
-
-    it('Retorno um objeto com o formato', async () => {
-      const product = await productService.createProduct(req, res);
-      expect(product).to.deep.equal({...product})
-    });
-  });
-  describe('Quando não cria', () => {
-    const req = {};
-    const res = {}
-    before(() => {
-      req.body = {name: "teste", quantity: 100}
-
-      res.status = sinon.stub().returns(res);
-      res.json = sinon.stub().returns()
-      sinon.stub(productService, "createProduct").throws({status: 409, message: "Product already exists"});
-    });
-
-    after(() => {
-      productService.createProduct.restore();
-    });
-
-    it('Retorno um erro com o status 409', async () => {
-      try {
-        await productController.createProduct(req, res);
-      } catch (err) {
-        expect(err.status).to.equal(409)
-      }
-    });
-    it('Retorno um erro com uma mensagem', async () => {
-      try {
-        await productController.createProduct(req, res);
-      } catch (err) {
-        expect(err.message).to.equal("Product already exists")
-      }
-    });
-  });
-}); 
+})
