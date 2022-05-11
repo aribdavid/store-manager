@@ -34,6 +34,7 @@ const createProductSale = async (saleId, productId, quantity) => {
 };
 
 const createSale = async (products) => {
+  await productsModel.updateAmount(products, true);
   const query = 'INSERT INTO StoreManager.sales (date) VALUES (NOW())';
   const [{ insertId: id }] = await connection.execute(query);
 
