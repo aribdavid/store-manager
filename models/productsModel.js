@@ -46,6 +46,20 @@ const deleteProduct = async (id) => {
   await connection.execute(query, [id]);
 };
 
+const updateAmount = async (array, boolean) => {
+  const response = array
+    .map(({ productId, quantity }) => {
+      if (boolean) {
+        return connection
+          .execute('UPDATE products SET quantity = quantity-? WHERE id=?', [quantity, productId]);
+      }
+    return connection
+      .execute('UPDATE products SET quantity = quantity+? WHERE id=?', [quantity, productId]);
+  });
+
+  await Promise.all(response);
+};
+
 module.exports = {
   getAll,
   getById,
@@ -53,4 +67,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateAmount,
 };

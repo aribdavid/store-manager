@@ -1,21 +1,21 @@
-const productService = require('../services/productService');
+const productsService = require('../services/productsService');
 
 const getAll = async (_request, response, _next) => {
-    await productService.getAll()
+    await productsService.getAll()
     .then((res) => response.status(200).json(res))
     .catch((error) => response.status(error.status).json({ message: error.message }));
 };
 
 const getById = async (request, response, _next) => {
     const { id } = request.params;
-     await productService.getById(id)
+     await productsService.getById(id)
      .then((res) => response.status(200).json(res))
      .catch((error) => response.status(error.status).json({ message: error.message }));
 };
 
 const createProduct = async (request, response) => {
     const { name, quantity } = request.body;
-    await productService.createProduct(name, quantity)
+    await productsService.createProduct(name, quantity)
     .then((res) => response.status(201).json(res))
     .catch((error) => response.status(error.status).json({ message: error.message }));
 };
@@ -23,14 +23,14 @@ const createProduct = async (request, response) => {
 const updateProduct = async (request, response, _next) => {
     const { id } = request.params;
     const { name, quantity } = request.body;
-     await productService.updateProduct(id, name, quantity)
+     await productsService.updateProduct(id, name, quantity)
      .then((res) => response.status(200).json(res))
      .catch((error) => response.status(error.status).json({ message: error.message }));
 };
 
 const deleteProduct = async (request, response, _next) => {
     const { id } = request.params;
-    await productService.deleteProduct(id)
+    await productsService.deleteProduct(id)
     .then((_res) => response.status(204).send())
     .catch((error) => response.status(error.status).json({ message: error.message }));
 };

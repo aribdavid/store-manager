@@ -1,21 +1,21 @@
-const saleService = require('../services/saleService');
+const salesService = require('../services/salesService');
 
 const getAll = async (_request, response, _next) => {
-   await saleService.getAll()
+   await salesService.getAll()
    .then((res) => response.status(200).json(res))
    .catch((error) => response.status(error.status).json({ message: error.message }));
 };
 
 const getById = async (request, response, _next) => {
    const { id } = request.params;
-   await saleService.getById(id)
+   await salesService.getById(id)
    .then((res) => response.status(200).json(res))
    .catch((error) => response.status(error.status).json({ message: error.message }));
 };
 
 const createSale = async (request, response, next) => {
     const sale = request.body;
-    await saleService.createSale(sale)
+    await salesService.createSale(sale)
     .then((res) => response.status(201).json(res))
     .catch((error) => next(error));
 };
@@ -23,7 +23,7 @@ const createSale = async (request, response, next) => {
 const updateSale = async (request, response, next) => {
     const { id } = request.params;
     const [sale] = request.body;
-    await saleService.updateSale(id, sale)
+    await salesService.updateSale(id, sale)
     .then((res) => response.status(200).json(res)) 
     .catch((error) => next(error));
 };

@@ -1,4 +1,5 @@
 const connection = require('./connection');
+const productsModel = require('./productsModel');
 
 const getAll = async () => {
   const query = `
@@ -62,9 +63,17 @@ const updateSale = async (id, { productId, quantity }) => {
   };
 };
 
+const deleteSale = async (id) => {
+  const array = await getById(id);
+  await productsModel.updateAmount(array, false);
+
+  await connection.execute('DELETE FROM sales WHERE id=?', [id]);
+};
+
 module.exports = {
   getAll,
   getById,
   createSale,
   updateSale,
+  deleteSale,
 };
