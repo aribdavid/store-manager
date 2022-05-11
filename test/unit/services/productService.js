@@ -1,8 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised')
 const sinon = require('sinon');
-const productService = require('../../../services/productService');
-const productModel = require('../../../models/productModel');
+const productService = require('../../../services/productsService');
+const productModel = require('../../../models/productsModel');
 const errorHandler = require('../../../utils/errorHandler')
 
 chai.use(chaiAsPromised);
