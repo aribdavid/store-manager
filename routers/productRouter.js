@@ -1,4 +1,5 @@
 const express = require('express');
+const rescue = require('express-rescue');
 const middleware = require('../middlewares');
 const productsController = require('../controllers/productsController');
 
@@ -6,12 +7,12 @@ const router = express.Router();
 
 router.get('/', productsController.getAll);
 
-router.get('/:id', productsController.getById);
+router.get('/:id', rescue(productsController.getById));
 
-router.post('/', middleware.productValidator, productsController.createProduct);
+router.post('/', middleware.productValidator, rescue(productsController.createProduct));
 
-router.put('/:id', middleware.productValidator, productsController.updateProduct);
+router.put('/:id', middleware.productValidator, rescue(productsController.updateProduct));
 
-router.delete('/:id', productsController.deleteProduct);
+router.delete('/:id', rescue(productsController.deleteProduct));
 
 module.exports = router;
