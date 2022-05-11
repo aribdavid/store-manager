@@ -1,97 +1,96 @@
-const sinon = require("sinon");
-const { expect } = require("chai");
-const saleModel = require("../../../models/saleModel");
-const saleService = require("../../../services/saleService")
+const sinon = require('sinon');
+const { expect } = require('chai');
+const salesModel = require('../../../models/salesModel');
+const salesService = require('../../../services/salesService');
 
-describe('Busca todos as vendas - Camada de service', () => {
-  describe('Quando acha', () => {
-    before(() => {
-      const response = [{}, {}];
-      sinon.stub(saleModel, "getAll").resolves(response);
-    })
 
-    after(() => {
-      saleModel.getAll.restore();
-    })
+describe('Testa se a Service da Sales retorna', () => {
+  describe('um erro, caso não exista uma venda', () => {
+    before(async () => {
+      const execute = [];
 
-    it('Retorna um array', async () => {
-      const sales = await saleService.getAll();
-      expect(sales).to.be.an('array')
+      sinon.stub(salesModel, 'getById').resolves(execute);
     });
 
-    it('O array contem objetos', async () => {
-      const sales = await saleService.getAll();
+    after(() => {
+      salesModel.getById.restore();
+    });
 
-      sales.forEach((product) => {
-        expect(product).to.be.an("object");
-      })
+    it('com a mensagem "Sale not found"', async () => {
+      try {
+        await salesService.getById(1);
+      } catch (err) {
+        expect(err.message).to.be.equal('Sale not found');
+      }
+    });
+
+    it('com o status de erro 404', async () => {
+      try {
+        await salesService.getById(1);
+      } catch (err) {
+        expect(err.status).to.be.equal(404);
+      }
     });
   });
 
-  describe('Quando não acha', () => {
-    before(() => {
-      const response = [];
-      sinon.stub(saleService, "getAll").resolves(response)
-    })
+  describe('todos as vendas', () => {
+    before(async () => {
+      const execute = [{
+        sale_id: 1,
+        date: '2021-09-09T04:54:29.000Z',
+        product_id: 1,
+        quantity: 2
+      }];
 
-    after(() => {
-      saleService.getAll.restore()
-    })
-
-    it('Retorna um erro status 404', async () => {
-      try {
-        await saleService.getAll()
-      } catch (err) {
-        expect(err.status).to.equal(404)
-      }
+      sinon.stub(salesModel, 'getAll').resolves(execute);
+      sinon.stub(salesModel, 'getById').resolves(execute);
     });
 
-    it('Retorna um erro a mensagem', async () => {
-      try {
-        await saleService.getAll()
-      } catch (err) {
-        expect(err.message).to.equal("Sales not found")
-      }
+    after(() => {
+      salesModel.getAll.restore();
+      salesModel.getById.restore();
+    });
+
+    it('em um formato de array', async () => {
+      const response = await salesService.getAll();
+
+      expect(response).to.be.an('array');
+    });
+
+    it('com as propriedades corretas', async () => {
+      const response = await salesService.getAll();
+
+      expect(response[0]).to.deep.keys('saleId', 'date', 'productId', 'quantity');
+    });
+  });
+
+  describe('apenas uma venda', () => {
+    before(async () => {
+      const execute = [{
+        date: '2021-09-09T04:54:29.000Z',
+        productId: 1,
+        quantity: 2
+      }];
+
+      sinon.stub(salesModel, 'getAll').resolves(execute);
+      sinon.stub(salesModel, 'getById').resolves(execute);
+    });
+
+    after(() => {
+      salesModel.getAll.restore();
+      salesModel.getById.restore();
+    });
+
+    it('em um formato de objeto', async () => {
+      const response = await salesService.getById(1);
+
+      expect(response).to.be.an('array');
+    });
+
+    it('com as propriedades corretas', async () => {
+      const response = await salesService.getById(1);
+
+      expect(response[0]).to.deep.keys('date', 'productId', 'quantity');
     });
   });
 });
-
-describe('Busca um produto especifico por id = Camada de service', () => {
-  describe('Quando acha', () => {
-    before(() => {
-      const response = [{}, {}];
-
-      sinon.stub(saleModel, 'getById').resolves(response)
-    })
-    after(() => {
-      saleModel.getById.restore()
-    });
-
-    it('Retorna um array de objetos', async () => {
-      const products = await saleService.getById(1);
-
-      products.forEach((product) => {
-        expect(product).to.be.an("object");
-      });
-    });    
-  });
-  describe('Quando não acha', () => {
-    before(() => {
-      const response = [];
-
-      sinon.stub(saleModel, 'getById').resolves(response)
-    })
-
-    after(() => {
-      saleModel.getById.restore()
-    })
-
-    it('Retorna um erro com status 404', async () => {
-      try {
-        await saleService.getById(99)
-      } catch (err) {
-        expect(err.status).to.be.equal(404)
-      }
-    });
-  });
-}); 
