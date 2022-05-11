@@ -51,7 +51,10 @@ const updateAmount = async (array, boolean) => {
     .map(({ productId, quantity }) => {
       if (boolean) {
         return connection
-          .execute('UPDATE products SET quantity = quantity-? WHERE id=?', [quantity, productId]);
+          .execute(
+            'UPDATE StoreManager.products SET quantity = quantity-? WHERE id=?',
+             [quantity, productId],
+);
       }
     return connection
       .execute('UPDATE products SET quantity = quantity+? WHERE id=?', [quantity, productId]);

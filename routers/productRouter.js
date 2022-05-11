@@ -1,17 +1,17 @@
 const express = require('express');
 const middleware = require('../middlewares');
-const productController = require('../controllers/productsController');
+const productsController = require('../controllers/productsController');
 
 const router = express.Router();
 
-router.get('/', productController.getAll);
+router.get('/', productsController.getAll);
 
-router.get('/:id', productController.getById);
+router.get('/:id', productsController.getById);
 
-router.post('/', middleware.productValidator, productController.createProduct);
+router.post('/', middleware.productValidator, productsController.createProduct);
 
-router.put('/:id', middleware.productValidator, productController.updateProduct);
+router.put('/:id', middleware.productValidator, productsController.updateProduct);
 
-router.delete('/:id', productController.deleteProduct);
+router.delete('/:id', productsController.deleteProduct);
 
 module.exports = router;
