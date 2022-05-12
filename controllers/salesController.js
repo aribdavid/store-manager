@@ -31,7 +31,7 @@ const updateSale = async (request, response, next) => {
 const deleteSale = async (request, response) => {
   const { id } = request.params;
   const result = await salesService.deleteSale(id);
-  if (result) return response.status(204).json();
+  if (result) return response.status(204).send();
     return response.status(404).json({ message: 'Sale not found' });
 };
 
