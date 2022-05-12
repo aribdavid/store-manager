@@ -57,7 +57,8 @@ const updateAmount = async (array, boolean) => {
 );
       }
     return connection
-      .execute('UPDATE products SET quantity = quantity+? WHERE id=?', [quantity, productId]);
+      .execute('UPDATE StoreManager.products SET quantity = quantity+? WHERE id=?', 
+      [quantity, productId]);
   });
 
   await Promise.all(response);

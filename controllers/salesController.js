@@ -30,8 +30,9 @@ const updateSale = async (request, response, next) => {
 
 const deleteSale = async (request, response) => {
   const { id } = request.params;
-  await salesService.deleteSale(id);
-  return response.status(204).json();
+  const result = await salesService.deleteSale(id);
+  if (result) return response.status(204).json();
+    return response.status(404).json({ message: 'Sale not found' });
 };
 
 module.exports = {
