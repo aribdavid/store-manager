@@ -4,9 +4,9 @@ const productsModel = require('../models/productsModel');
 const erroHandler = require('../utils/errorHandler');
 
 const validateSale = async (array) => {
-  const getQuantity = array.map(({ productId }) => productsModel.getById(productId));
+  const getAmount = array.map(({ productId }) => productsModel.getById(productId));
 
-  const response = await Promise.all(getQuantity);
+  const response = await Promise.all(getAmount);
 
   const quantityAvailable = response.map((el) => el[0].quantity);
 

@@ -1,6 +1,6 @@
 const schema = require('../schemas/saleSchema');
 
-const productValidation = (request, _response, next) => {
+const saleValidation = (request, _response, next) => {
   request.body.forEach(({ productId, quantity }) => {
     const { error } = schema.validate({ productId, quantity });
     if (error) {
@@ -14,4 +14,4 @@ const productValidation = (request, _response, next) => {
   next();
 };
 
-module.exports = productValidation;
+module.exports = saleValidation;
