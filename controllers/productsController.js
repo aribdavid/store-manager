@@ -30,9 +30,10 @@ const updateProduct = async (request, response, _next) => {
 
 const deleteProduct = async (request, response, _next) => {
     const { id } = request.params;
-    await productsService.deleteProduct(id)
-    .then((_res) => response.status(204).send())
-    .catch((error) => response.status(error.status).json({ message: error.message }));
+    const result = await productsService.deleteProduct(id);
+     
+    if (result) return response.status(204).send();
+    return response.status(404).json({ message: 'Product not found' });
 };
 
 module.exports = {
